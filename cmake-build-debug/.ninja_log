@@ -1,0 +1,5 @@
+# ninja log v5
+1	100	6892659561624228	CMakeFiles/numerosBipolares.dir/numerosBipolares.c.obj	2fcb9544de986805
+1	139	6892660178508106	CMakeFiles/main.dir/main.c.obj	4cacaf297dac31c3
+0	109	6892659879032476	CMakeFiles/main.dir/numerosBipolares.c.obj	62649615c3867961
+140	291	6892660179945328	main.exe	8a1df202ab0b103a
