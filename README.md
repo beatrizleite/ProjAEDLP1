@@ -3,8 +3,8 @@
 
 # Pontos a preencher:
 
-  - ## **_1._** As estruturas de dados para guardar as chaves públicas e privadas devem basear-se em matrizes dinâmicas:
-    - ### **_a._** No caso da representação com inteiros devem utilizar-se matrizes dinâmicas dos dígitos inteiros (i.e. array dinâmico de vários arrays dos dígitos das chaves);
+  - [ ] ## **_1._** As estruturas de dados para guardar as chaves públicas e privadas devem basear-se em matrizes dinâmicas:
+    - [x] ### **_a._** No caso da representação com inteiros devem utilizar-se matrizes dinâmicas dos dígitos inteiros (i.e. array dinâmico de vários arrays dos dígitos das chaves);
     - ### **_b._** No caso da representação com strings devem utilizar-se matrizes dinâmicas de caracteres dos respectivos dígitos (i.e. array dinâmico de várias strings contendo os caracteres representativos dos dígitos das chaves);
 
   - ## **_2._** Dada uma chave pública, calcular a chave privada com base em dois algoritmos diferentes à escolha, i.e., dada uma chave pública n:
