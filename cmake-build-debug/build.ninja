@@ -61,6 +61,18 @@ build CMakeFiles/main.dir/codigo/numerosBipolares.c.obj: C_COMPILER__main_Debug 
   OBJECT_DIR = CMakeFiles\main.dir
   OBJECT_FILE_DIR = CMakeFiles\main.dir\codigo
 
+build CMakeFiles/main.dir/codigo/bipolarInts.c.obj: C_COMPILER__main_Debug C$:/Users/Bea/Documents/ProjAEDLP1/codigo/bipolarInts.c || cmake_object_order_depends_target_main
+  DEP_FILE = CMakeFiles\main.dir\codigo\bipolarInts.c.obj.d
+  FLAGS = -g -std=gnu99
+  OBJECT_DIR = CMakeFiles\main.dir
+  OBJECT_FILE_DIR = CMakeFiles\main.dir\codigo
+
+build CMakeFiles/main.dir/codigo/bipolarChars.c.obj: C_COMPILER__main_Debug C$:/Users/Bea/Documents/ProjAEDLP1/codigo/bipolarChars.c || cmake_object_order_depends_target_main
+  DEP_FILE = CMakeFiles\main.dir\codigo\bipolarChars.c.obj.d
+  FLAGS = -g -std=gnu99
+  OBJECT_DIR = CMakeFiles\main.dir
+  OBJECT_FILE_DIR = CMakeFiles\main.dir\codigo
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target main
@@ -69,7 +81,7 @@ build CMakeFiles/main.dir/codigo/numerosBipolares.c.obj: C_COMPILER__main_Debug 
 #############################################
 # Link the executable main.exe
 
-build main.exe: C_EXECUTABLE_LINKER__main_Debug CMakeFiles/main.dir/main.c.obj CMakeFiles/main.dir/codigo/numerosBipolares.c.obj
+build main.exe: C_EXECUTABLE_LINKER__main_Debug CMakeFiles/main.dir/main.c.obj CMakeFiles/main.dir/codigo/numerosBipolares.c.obj CMakeFiles/main.dir/codigo/bipolarInts.c.obj CMakeFiles/main.dir/codigo/bipolarChars.c.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\main.dir

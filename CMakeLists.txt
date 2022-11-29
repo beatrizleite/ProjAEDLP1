@@ -3,4 +3,4 @@ project(numerosBipolares C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(main main.c codigo/numerosBipolares.c)
+add_executable(main main.c codigo/bipolarInts.c headers/bipolarInts.h codigo/bipolarChars.c headers/bipolarChars.h)
