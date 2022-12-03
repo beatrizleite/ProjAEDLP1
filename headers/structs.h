@@ -5,13 +5,17 @@
 #ifndef NUMEROSBIPOLARES_STRUCTS_H
 #define NUMEROSBIPOLARES_STRUCTS_H
 
-struct chave_int {
+typedef struct chave{
+    int digit_count;
+}CHAVE;
 
-};
+typedef struct {
 
-struct chave_char {
+}chave_int;
 
-};
+typedef struct {
+
+}chave_char;
 
 
 #endif //NUMEROSBIPOLARES_STRUCTS_H

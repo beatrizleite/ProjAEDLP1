@@ -4,12 +4,29 @@
 
 #ifndef NUMEROSBIPOLARES_BIPOLARINTS_H
 #define NUMEROSBIPOLARES_BIPOLARINTS_H
-
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 /**
  * Generate a random integer to be used as the public key.
  * @return random number representing a public key
  */
 unsigned long long new_public_key_int(void);
+
+/**
+ * Counts number of digits in key
+* @param key - long key
+ * @return number of digits in key
+ */
+int count_digits(unsigned long long key);
+
+/**
+ * Checks if number is bipolar
+ * @param key - long key
+ * @return 0 if number isn't bipolar and 1 if it is
+ */
+int isBipolar(unsigned long long key);
 
 /**
  * Create an array of digits for a given key.
@@ -31,6 +48,14 @@ unsigned long long key_digits_2_long_int(short* keydigits);
  * @return bipolar number representing the private key
  */
 unsigned long long calc_private_key_int(unsigned long long pubkey);
+
+/**
+ * Efficient version
+ * Calculate the bipolar private key from a given public key (returns the bipolar private key).
+ * @param pubkey - public key for which to calculate the private key
+ * @return bipolar number representing the private key
+ */
+unsigned long long v1_calc_private_key_int(unsigned long long pubkey);
 
 /**
  * Calculate the run-length from a given private key.
@@ -77,7 +102,7 @@ int exists_key_int(short **matrix, int lines, unsigned long long key);
  * @param matrix_kpriv - private keys matrix
  * @param lines - matrix number of lines
  * @param pubkey - public key for which we want the private key
- * @return private key of the given pubkey
+ * @return private key of the given pubkey or 0 if no value is found
  */
 unsigned long long get_private_key_int(short **matrix_kpub, short **matrix_kpriv, int lines, unsigned long long pubkey);
 
