@@ -127,6 +127,8 @@ unsigned long long get_runlength_int(short **matrix_kpriv, short **matrix_kcod, 
  */
 unsigned long long delete_key_int(short **matrix_kpub, short **matrix_kpriv, short **matrix_kcod, int lines, short pubkey);
 
+short * arr_line(short ** matrix, int line);
+
 /**
  * Automatically generate and save a given amount (<lines>) of public keys.
  * @param matrix_kpub - public keys matrix

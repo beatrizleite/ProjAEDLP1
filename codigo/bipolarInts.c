@@ -20,10 +20,10 @@ unsigned long long new_public_key_int(void) {
 }
 
 short* key_long_2_digits_int(unsigned long long key) {
-    int digit_num = count_digits(key);
+    int cnt = count_digits(key);
     short aux = (short) key;
-    short * arr = (short *) malloc(digit_num * sizeof(short));
-    for (int i = digit_num-1; i >= 0; i--) {
+    short * arr = calloc(cnt+1, sizeof(short));
+    for (int i = cnt-1; i >= 0; i--) {
         int digit = aux % 10;
         arr[i] = (short) digit;
         aux /= 10;
@@ -31,14 +31,10 @@ short* key_long_2_digits_int(unsigned long long key) {
     return arr;
 }
 
-int count_array_elements(short * arr) {
-
-}
-
 unsigned long long key_digits_2_long_int(short* keydigits){
-    size_t digit_num = sizeof(keydigits)/sizeof(short);
+    size_t cnt = sizeof(keydigits)/sizeof(keydigits[0]); //not working
     unsigned long long num = 0;
-    for (int i = 0; i < digit_num; ++i) {
+    for (int i = 0; i<cnt; ++i) {
         num *= 10;
         num += keydigits[i];
     }
@@ -65,8 +61,7 @@ int isBipolar(unsigned long long key) {
         }
     }
     short * arr = key_long_2_digits_int(key);
-    //int size = (int)sizeof(arr)/sizeof(arr[0]);
-    int size = count_digits(key);
+    int size = (int)sizeof(arr)/sizeof(arr[0]);
 
     int diff = 0;
     for (int i = 1; i < size; ++i) {
@@ -101,8 +96,6 @@ unsigned long long calc_private_key_int(unsigned long long pubkey) {
 unsigned long long v1_calc_private_key_int(unsigned long long pubkey) {
     int i, j, k, n;
     unsigned long long num = 0;
-    time_t t;
-    srand((unsigned) time(&t));
 
     i = 1 + rand()%8;
     j = rand()%9;
@@ -122,31 +115,26 @@ unsigned long long v1_calc_private_key_int(unsigned long long pubkey) {
     } else {
         v1_calc_private_key_int(pubkey);
     }
-
-    return num;
+    return isBipolar(num) ? num : v1_calc_private_key_int(pubkey);
 }
 
 unsigned long long calc_runlength_int(unsigned long long privkey){
     int cnt = count_digits(privkey);
-    unsigned long long aux=privkey, digit=0;
-    unsigned long long count1=0,count2=0,digit_one=0, digit_two=0;
-    unsigned long long rl=0;
-    while(aux) {
-        digit = aux%10;
-        digit_one = digit;
-        count1++;
-        aux /= 10;
+    int count = 1;
+    int k = 0;
+    short * privkey_arr = key_long_2_digits_int(privkey);
+    short * rl_arr = (short*) calloc(cnt, sizeof(short));
+    for (int i = 0; i < cnt; ++i) {
+        if(privkey_arr[i] == privkey_arr[i+1]) {
+            count++;
+        } else {
+            rl_arr[k] = count;
+            rl_arr[k+1] = privkey_arr[i];
+            k += 2;
+            count = 1;
+        }
     }
-
-    rl += count1;
-    rl *= 10;
-    rl += digit_one;
-    rl *= 10;
-    rl += count2;
-    rl *= 10;
-    rl += digit_two;
-
-    return rl;
+    return key_digits_2_long_int(rl_arr);
 }
 
 unsigned long long private_key_from_runlength_int(unsigned long long runlengthkey) {
@@ -237,7 +225,7 @@ unsigned long long get_runlength_int(short **matrix_kpriv, short **matrix_kcod, 
             }
         }
         if (k == 1) {
-            return calc_runlength_int(key_digits_2_long_int(matrix_kpriv[lin]));
+            return calc_runlength_int(key_digits_2_long_int(matrix_kcod[lin]));
         }
     }
     return 0;
@@ -301,38 +289,39 @@ unsigned long long delete_key_int(short **matrix_kpub, short **matrix_kpriv, sho
     return pubkey;
 }
 
+short * get_arr_line(short ** matrix, int line) {
+    short * arr = (short *) alloc_matrix_int(1, 20); //20 é um valor aleatorio, é necessário fazer dinamicamente
+    for (int i = 0; matrix[line][i] != 0 && matrix[line][i+1] != 0; ++i) { //nao e eficiente porque pode haver numeros com varios 0's seguidos
+        arr[i] = matrix[line][i];
+    }
+    return arr;
+}
+
 void bulk_populate_public_keys_int(short **matrix_kpub, int lines) {
     for (int i = 0; i < lines; ++i) {
         unsigned long long new_key = new_public_key_int();
-        short * new_key_arr = key_long_2_digits_int(new_key);
-        for (int j = 0; j < count_digits(new_key); ++j) {
-            matrix_kpub[i][j] = new_key_arr[j];
-        }
+        store_key_int(matrix_kpub, lines, new_key);
     }
 }
 
-void bulk_compute_private_keys_int(short **matrix_kpub, short **matrix_kpriv, int lines) {
-    for (int i = 0; i < lines; ++i) {
-        unsigned long long new_key = key_digits_2_long_int(matrix_kpub[i]);
-        unsigned long long new_priv_key = v1_calc_private_key_int(new_key);
-        short * new_key_arr = key_long_2_digits_int(new_priv_key);
-        int cnt = count_digits(new_priv_key);
 
-        for (int j = 0; j < cnt; ++j) {
-            matrix_kpriv[i][j] = new_key_arr[j];
-            printf("new_key_Arr[%d] = %hd",j,new_key_arr[j]);
-        }
+void bulk_compute_private_keys_int(short **matrix_kpub, short **matrix_kpriv, int lines) {
+    short * kpub_key = NULL;
+    for (int i = 0; i < lines; ++i) {
+        kpub_key = get_arr_line(matrix_kpub, i);
+        unsigned long long new_key = key_digits_2_long_int(kpub_key);
+        unsigned long long new_priv_key = v1_calc_private_key_int(new_key);
+        store_key_int(matrix_kpriv, lines, new_priv_key);
     }
 }
 
 void bulk_compute_runlengths_int(short **matrix_kpriv, short **matrix_kcod, int lines) {
+    short * kpriv_key = NULL;
     for (int i = 0; i < lines; ++i) {
-        unsigned long long new_key = key_digits_2_long_int(matrix_kpriv[i]);
+        kpriv_key = get_arr_line(matrix_kpriv, i);
+        unsigned long long new_key = key_digits_2_long_int(kpriv_key);
         unsigned long long new_cod_key = calc_runlength_int(new_key);
-        short * new_key_arr = key_long_2_digits_int(new_cod_key);
-        for (int j = 0; j < count_digits(new_cod_key); ++j) {
-            matrix_kcod[i][j] = new_key_arr[j];
-        }
+        store_key_int(matrix_kcod, lines, new_cod_key);
     }
 }
 
