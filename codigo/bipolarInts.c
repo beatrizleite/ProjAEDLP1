@@ -6,7 +6,7 @@
 
 
 int count_digits(unsigned long long key) {
-    short aux = (short) key;
+    unsigned long long aux = key;
     int count=0;
     while(aux) {
         aux /= 10;
@@ -31,8 +31,12 @@ short* key_long_2_digits_int(unsigned long long key) {
     return arr;
 }
 
+int count_array_elements(short * arr) {
+
+}
+
 unsigned long long key_digits_2_long_int(short* keydigits){
-    int digit_num = sizeof(keydigits)/sizeof(keydigits[0]);
+    size_t digit_num = sizeof(keydigits)/sizeof(short);
     unsigned long long num = 0;
     for (int i = 0; i < digit_num; ++i) {
         num *= 10;
@@ -81,9 +85,8 @@ unsigned long long calc_private_key_int(unsigned long long pubkey) {
     time_t t;
     srand((unsigned) time(&t));
     int k = 1;
-    int i = 53;
     while(k){
-        //int i = 1 + rand() % 100000;
+        int i = 1 + rand() % 100000;
         if(pubkey % i == 0) {
             if(isBipolar(i)) {
                 privkey = i;
@@ -99,7 +102,6 @@ unsigned long long v1_calc_private_key_int(unsigned long long pubkey) {
     int i, j, k, n;
     unsigned long long num = 0;
     time_t t;
-
     srand((unsigned) time(&t));
 
     i = 1 + rand()%8;
@@ -131,13 +133,8 @@ unsigned long long calc_runlength_int(unsigned long long privkey){
     unsigned long long rl=0;
     while(aux) {
         digit = aux%10;
-        if(digit_one == digit_two) {
-            digit_one = digit;
-            count1++;
-        } else {
-            digit_two = digit;
-            count2++;
-        }
+        digit_one = digit;
+        count1++;
         aux /= 10;
     }
 
@@ -192,18 +189,20 @@ void store_key_int(short **matrix, int lines, unsigned long long key){
 int exists_key_int(short **matrix, int lines, unsigned long long key) {
     int columns = count_digits(key);
     int k=0;
+    int line=0;
     short * key_arr = key_long_2_digits_int(key);
     for (int i = 0; i < lines; ++i) {
         for (int j = 0; j < columns; ++j) {
             if(matrix[i][j] == key_arr[j] && matrix[i][j+1] == 0){
                 k++;
+                line = i;
             }
         }
         if(k == 1) {
-            return 1;
+            return line;
         }
     }
-    return 0;
+    return -1;
 }
 
 unsigned long long get_private_key_int(short **matrix_kpub, short **matrix_kpriv, int lines, unsigned long long pubkey) {
@@ -242,4 +241,109 @@ unsigned long long get_runlength_int(short **matrix_kpriv, short **matrix_kcod, 
         }
     }
     return 0;
+}
+
+unsigned long long delete_key_int(short **matrix_kpub, short **matrix_kpriv, short **matrix_kcod, int lines, short pubkey) {
+    short * pubkey_arr = key_long_2_digits_int(pubkey);
+    unsigned long long pkey = get_private_key_int(matrix_kpub, matrix_kpriv, lines, pubkey);
+    short * pkey_arr = key_long_2_digits_int(pkey);
+    unsigned long long pcod = get_runlength_int(matrix_kpriv, matrix_kcod, lines, pkey);
+    short * pcod_arr = key_long_2_digits_int(pcod);
+
+    for (int i = 0; i < lines; ++i) {
+        int pub_cnt = count_digits(pubkey);
+        int priv_cnt = count_digits(pkey);
+        int cod_count = count_digits(pcod);
+        int index = -1;
+
+        //delete key in public matrix
+        for (int j = 0; j < pub_cnt; ++j) {
+            if (matrix_kpub[i][j] == pubkey_arr[j] && matrix_kpub[i][j + 1] == 0) {
+                index = i;
+            }
+        }
+
+        if(index != -1) {
+            for (int j = index; j < lines - 1; ++j) {
+                matrix_kpub[j] = matrix_kpub[j+1];
+            }
+            index = -1;
+        }
+
+        //delete key in priv matrix
+        for (int j = 0; j < priv_cnt; ++j) {
+            if (matrix_kpriv[i][j] == pkey_arr[j] && matrix_kpub[i][j + 1] == 0) {
+                index = i;
+            }
+        }
+
+        if(index != -1) {
+            for (int j = index; j < lines - 1; ++j) {
+                matrix_kpriv[j] = matrix_kpriv[j+1];
+            }
+            index = -1;
+        }
+
+        //delete key in cod (run-length) matrix
+        for (int j = 0; j < cod_count; ++j) {
+            if (matrix_kcod[i][j] == pcod_arr[j] && matrix_kcod[i][j + 1] == 0) {
+                index = i;
+            }
+        }
+
+        if(index != -1) {
+            for (int j = index; j < lines - 1; ++j) {
+                matrix_kcod[j] = matrix_kcod[j+1];
+            }
+            index = -1;
+        }
+    }
+    return pubkey;
+}
+
+void bulk_populate_public_keys_int(short **matrix_kpub, int lines) {
+    for (int i = 0; i < lines; ++i) {
+        unsigned long long new_key = new_public_key_int();
+        short * new_key_arr = key_long_2_digits_int(new_key);
+        for (int j = 0; j < count_digits(new_key); ++j) {
+            matrix_kpub[i][j] = new_key_arr[j];
+        }
+    }
+}
+
+void bulk_compute_private_keys_int(short **matrix_kpub, short **matrix_kpriv, int lines) {
+    for (int i = 0; i < lines; ++i) {
+        unsigned long long new_key = key_digits_2_long_int(matrix_kpub[i]);
+        unsigned long long new_priv_key = v1_calc_private_key_int(new_key);
+        short * new_key_arr = key_long_2_digits_int(new_priv_key);
+        int cnt = count_digits(new_priv_key);
+
+        for (int j = 0; j < cnt; ++j) {
+            matrix_kpriv[i][j] = new_key_arr[j];
+            printf("new_key_Arr[%d] = %hd",j,new_key_arr[j]);
+        }
+    }
+}
+
+void bulk_compute_runlengths_int(short **matrix_kpriv, short **matrix_kcod, int lines) {
+    for (int i = 0; i < lines; ++i) {
+        unsigned long long new_key = key_digits_2_long_int(matrix_kpriv[i]);
+        unsigned long long new_cod_key = calc_runlength_int(new_key);
+        short * new_key_arr = key_long_2_digits_int(new_cod_key);
+        for (int j = 0; j < count_digits(new_cod_key); ++j) {
+            matrix_kcod[i][j] = new_key_arr[j];
+        }
+    }
+}
+
+int columns_per_line(short ** matrix, int line) {
+
+}
+
+short** search_private_keys_int(short **matrix_kpub, short **matrix_kpriv, int lines, unsigned long long partialpubkey) {
+    
+}
+
+void sort_matrix_int(short **matrix, int lines, int order){
+
 }

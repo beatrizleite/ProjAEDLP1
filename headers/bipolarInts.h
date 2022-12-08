@@ -151,6 +151,14 @@ void bulk_compute_private_keys_int(short **matrix_kpub, short **matrix_kpriv, in
 void bulk_compute_runlengths_int(short **matrix_kpriv, short **matrix_kcod, int lines);
 
 /**
+ * Return the number of columns in a specified line
+ * @param matrix - matrix in which we are searching
+ * @param line - line we want to know the size of
+ * @return integer with the number of columns in the line
+ */
+int columns_per_line(short ** matrix, int line);
+
+/**
  * Return a list of all private keys matching a given partial public key.
  * @param matrix_kpub - public keys matrix
  * @param matrix_kpriv - private keys matrix
