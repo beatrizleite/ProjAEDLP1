@@ -21,13 +21,14 @@ unsigned long long new_public_key_int(void) {
 
 short* key_long_2_digits_int(unsigned long long key) {
     int cnt = count_digits(key);
-    short aux = (short) key;
+    unsigned long long aux = key;
     short * arr = calloc(cnt+1, sizeof(short));
     for (int i = cnt-1; i >= 0; i--) {
-        int digit = aux % 10;
-        arr[i] = (short) digit;
+        unsigned long long digit = aux % 10;
+        arr[i] = digit;
         aux /= 10;
     }
+    arr[cnt] = -1;
     return arr;
 }
 
@@ -49,10 +50,13 @@ int isBipolar(unsigned long long key) {
     int cnt [] = {0, 0, 0, 0, 0,
                   0, 0, 0, 0, 0};
     unsigned long long aux = key;
-    while(aux) {
+    short * aux_arr = key_long_2_digits_int(key);
+    int n = 0;
+    while(aux_arr[n] != -1) {
         int rem = aux % 10;
         cnt[rem]++;
         aux /= 10;
+        n++;
     }
     for (int i = 0; i < 10; ++i) {
         if(cnt[i] != 0) k++;
@@ -61,10 +65,8 @@ int isBipolar(unsigned long long key) {
         }
     }
     short * arr = key_long_2_digits_int(key);
-    int size = (int)sizeof(arr)/sizeof(arr[0]);
-
     int diff = 0;
-    for (int i = 1; i < size; ++i) {
+    for (int i = 1; arr[i] != -1; ++i) {
         if (arr[i] != arr[i-1]) {
             diff++;
             if(diff != 1) {
@@ -76,24 +78,6 @@ int isBipolar(unsigned long long key) {
 }
 
 unsigned long long calc_private_key_int(unsigned long long pubkey) {
-    unsigned long long privkey;
-    time_t t;
-    srand((unsigned) time(&t));
-    int k = 1;
-    while(k){
-        int i = 1 + rand() % 100000;
-        if(pubkey % i == 0) {
-            if(isBipolar(i)) {
-                privkey = i;
-                k = 0;
-            }
-        }
-        i++;
-    }
-    return privkey;
-}
-
-unsigned long long v1_calc_private_key_int(unsigned long long pubkey) {
     int i, j, k, n;
     unsigned long long num = 0;
 
@@ -113,28 +97,28 @@ unsigned long long v1_calc_private_key_int(unsigned long long pubkey) {
             k--;
         }
     } else {
-        v1_calc_private_key_int(pubkey);
+        calc_private_key_int(pubkey);
     }
-    return isBipolar(num) ? num : v1_calc_private_key_int(pubkey);
+    return isBipolar(num) ? num : calc_private_key_int(pubkey);
 }
 
 unsigned long long calc_runlength_int(unsigned long long privkey){
-    int cnt = count_digits(privkey);
-    int count = 1;
-    int k = 0;
-    short * privkey_arr = key_long_2_digits_int(privkey);
-    short * rl_arr = (short*) calloc(cnt, sizeof(short));
-    for (int i = 0; i < cnt; ++i) {
-        if(privkey_arr[i] == privkey_arr[i+1]) {
+    int count = 1, k = 0, rl = 0;
+    short * arr = key_long_2_digits_int(privkey);
+    for (int i = 0; arr[i] != -1; ++i) {
+        if(arr[i] == arr[i+1]) {
             count++;
+            k = arr[i];
         } else {
-            rl_arr[k] = count;
-            rl_arr[k+1] = privkey_arr[i];
-            k += 2;
+            rl *= 10;
+            rl += count;
+            rl *= 10;
+            rl += k;
             count = 1;
         }
+
     }
-    return key_digits_2_long_int(rl_arr);
+    return rl;
 }
 
 unsigned long long private_key_from_runlength_int(unsigned long long runlengthkey) {
@@ -310,7 +294,7 @@ void bulk_compute_private_keys_int(short **matrix_kpub, short **matrix_kpriv, in
     for (int i = 0; i < lines; ++i) {
         kpub_key = get_arr_line(matrix_kpub, i);
         unsigned long long new_key = key_digits_2_long_int(kpub_key);
-        unsigned long long new_priv_key = v1_calc_private_key_int(new_key);
+        unsigned long long new_priv_key = calc_private_key_int(new_key);
         store_key_int(matrix_kpriv, lines, new_priv_key);
     }
 }

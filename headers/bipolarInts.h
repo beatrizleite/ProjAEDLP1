@@ -50,14 +50,6 @@ unsigned long long key_digits_2_long_int(short* keydigits);
 unsigned long long calc_private_key_int(unsigned long long pubkey);
 
 /**
- * Efficient version
- * Calculate the bipolar private key from a given public key (returns the bipolar private key).
- * @param pubkey - public key for which to calculate the private key
- * @return bipolar number representing the private key
- */
-unsigned long long v1_calc_private_key_int(unsigned long long pubkey);
-
-/**
  * Calculate the run-length from a given private key.
  * @param privkey - private key for which to calculate the run-length
  * @return run-length number representing the private key

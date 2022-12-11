@@ -6,16 +6,11 @@
 #define NUMEROSBIPOLARES_STRUCTS_H
 
 typedef struct chave{
-    int digit_count;
+    unsigned long long pubkey;
+    unsigned long long privkey;
+    unsigned long long kcodkey;
+    int size;
 }CHAVE;
-
-typedef struct {
-
-}chave_int;
-
-typedef struct {
-
-}chave_char;
 
 
 #endif //NUMEROSBIPOLARES_STRUCTS_H
