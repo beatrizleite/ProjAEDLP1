@@ -3,20 +3,30 @@
 //
 
 #include "../headers/bipolarInts.h"
+#include <stdio.h>
+#include <string.h>
 
+int hasZero(unsigned long long key) {
+    int result = 0;
+    while (key) {
+        result += !(key % 10);
+        key /= 10;
+    }
+    return result;
+}
 
 int count_digits(unsigned long long key) {
-    unsigned long long aux = key;
-    int count=0;
-    while(aux) {
-        aux /= 10;
+    int count = 0;
+    while (key) {
         count++;
+        key /= 10;
     }
+    count += hasZero(key);
     return count;
 }
 
 unsigned long long new_public_key_int(void) {
-    return (unsigned long long)(rand() % 10000) + 1;
+    return (unsigned long long)rand() + 1;
 }
 
 short* key_long_2_digits_int(unsigned long long key) {
@@ -33,9 +43,8 @@ short* key_long_2_digits_int(unsigned long long key) {
 }
 
 unsigned long long key_digits_2_long_int(short* keydigits){
-    size_t cnt = sizeof(keydigits)/sizeof(keydigits[0]); //not working
     unsigned long long num = 0;
-    for (int i = 0; i<cnt; ++i) {
+    for (int i = 0; keydigits[i] != -1; ++i) {
         num *= 10;
         num += keydigits[i];
     }
@@ -139,7 +148,7 @@ unsigned long long private_key_from_runlength_int(unsigned long long runlengthke
 
 short** alloc_matrix_int(int nlines, int ncolumns) {
     short** a = (short**)calloc(nlines, sizeof(short*));
-    for (int i = 0; i < nlines; ++i) {
+    for (int i = 0; i < nlines; i++) {
         a[i] = (short*)calloc(ncolumns, sizeof(short));
     }
     return a;
@@ -149,14 +158,16 @@ void store_key_int(short **matrix, int lines, unsigned long long key){
     int columns = count_digits(key);
     short * key_arr = key_long_2_digits_int(key);
     for (int i = 0; i < lines; ++i) {
-        if(matrix[i][0] == 0) {
+        if(matrix[i][0] == 0){
+            matrix[i] = realloc(matrix[i], (columns + 1) * sizeof(short));
             for (int j = 0; j < columns; ++j) {
                 matrix[i][j] = key_arr[j];
             }
-            return;
+            matrix[i][columns] = -1;
         }
     }
 }
+
 
 int exists_key_int(short **matrix, int lines, unsigned long long key) {
     int columns = count_digits(key);
@@ -273,39 +284,28 @@ unsigned long long delete_key_int(short **matrix_kpub, short **matrix_kpriv, sho
     return pubkey;
 }
 
-short * get_arr_line(short ** matrix, int line) {
-    short * arr = (short *) alloc_matrix_int(1, 20); //20 é um valor aleatorio, é necessário fazer dinamicamente
-    for (int i = 0; matrix[line][i] != 0 && matrix[line][i+1] != 0; ++i) { //nao e eficiente porque pode haver numeros com varios 0's seguidos
-        arr[i] = matrix[line][i];
-    }
-    return arr;
-}
-
 void bulk_populate_public_keys_int(short **matrix_kpub, int lines) {
+    unsigned long long new_key;
     for (int i = 0; i < lines; ++i) {
-        unsigned long long new_key = new_public_key_int();
-        store_key_int(matrix_kpub, lines, new_key);
+        new_key = new_public_key_int();
+        store_key_int(matrix_kpub, i+1, new_key);
     }
 }
 
 
 void bulk_compute_private_keys_int(short **matrix_kpub, short **matrix_kpriv, int lines) {
-    short * kpub_key = NULL;
     for (int i = 0; i < lines; ++i) {
-        kpub_key = get_arr_line(matrix_kpub, i);
-        unsigned long long new_key = key_digits_2_long_int(kpub_key);
+        unsigned long long new_key = key_digits_2_long_int(matrix_kpub[i]);
         unsigned long long new_priv_key = calc_private_key_int(new_key);
-        store_key_int(matrix_kpriv, lines, new_priv_key);
+        store_key_int(matrix_kpriv, i+1, new_priv_key);
     }
 }
 
 void bulk_compute_runlengths_int(short **matrix_kpriv, short **matrix_kcod, int lines) {
-    short * kpriv_key = NULL;
     for (int i = 0; i < lines; ++i) {
-        kpriv_key = get_arr_line(matrix_kpriv, i);
-        unsigned long long new_key = key_digits_2_long_int(kpriv_key);
+        unsigned long long new_key = key_digits_2_long_int(matrix_kpriv[i]);
         unsigned long long new_cod_key = calc_runlength_int(new_key);
-        store_key_int(matrix_kcod, lines, new_cod_key);
+        store_key_int(matrix_kcod, i+1, new_cod_key);
     }
 }
 

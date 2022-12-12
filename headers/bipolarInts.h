@@ -16,8 +16,15 @@ unsigned long long new_public_key_int(void);
 
 /**
  * Counts number of digits in key
+ * @param key - long key
+ * @return number of zeros in key
+ */
+int hasZero(unsigned long long key);
+
+/**
+ * Counts number of digits in key
 * @param key - long key
- * @return number of digits in key
+ * @return number of digits in key (including zeros)
  */
 int count_digits(unsigned long long key);
 
