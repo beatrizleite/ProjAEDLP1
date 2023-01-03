@@ -14,13 +14,6 @@
 char* key_long_2_digits_char(unsigned long long key);
 
 /**
- * Checks if number is bipolar
- * @param key - long key
- * @return 0 if number isn't bipolar and 1 if it is
- */
-int isBipolar(unsigned long long key);
-
-/**
  * Receives an array of digits in ascii i.e. chars and returns the long key.
  * @param keydigits - array of digits of key
  * @return address of array of digits for a given key
