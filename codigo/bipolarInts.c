@@ -4,7 +4,6 @@
 
 #include "../headers/bipolarInts.h"
 #include <stdio.h>
-#include <string.h>
 
 int hasZero(unsigned long long key) {
     int result = 0;
@@ -168,45 +167,31 @@ void store_key_int(short **matrix, int lines, unsigned long long key){
 
 
 int exists_key_int(short **matrix, int lines, unsigned long long key) {
-    int columns = count_digits(key);
-    int k=0;
-    int line=0;
+    int columns, k = 0, line = 0;
     short * key_arr = key_long_2_digits_int(key);
+    unsigned long long m;
     for (int i = 0; i < lines; ++i) {
+        m = key_digits_2_long_int(matrix[i]);
+        columns = count_digits(m);
         for (int j = 0; j < columns; ++j) {
-            if(matrix[i][j] == key_arr[j] && matrix[i][j+1] == 0){
+            if(matrix[i][j] == key_arr[j] && matrix[i][j+1] == -1){
                 k++;
                 line = i;
             }
         }
         if(k == 1) {
-            return line;
-        }
-    }
-    return -1;
-}
-
-unsigned long long get_private_key_int(short **matrix_kpub, short **matrix_kpriv, int lines, unsigned long long pubkey) {
-    return key_digits_2_long_int(matrix_kpriv[lines]);
-}
-
-unsigned long long get_runlength_int(short **matrix_kpriv, short **matrix_kcod, int lines, unsigned long long privkey) {
-    int cnt = count_digits(privkey);
-    int k=0, lin;
-    short * key_arr = key_long_2_digits_int(privkey);
-
-    for (int i = 0; i < lines; ++i) {
-        for (int j = 0; j < cnt; ++j) {
-            if (matrix_kpriv[i][j] == key_arr[j] && matrix_kpriv[i][j + 1] == 0) {
-                k++;
-                lin = i;
-            }
-        }
-        if (k == 1) {
-            return calc_runlength_int(key_digits_2_long_int(matrix_kcod[lin]));
+            return 1;
         }
     }
     return 0;
+}
+
+unsigned long long get_private_key_int(short **matrix_kpub, short **matrix_kpriv, int lines, unsigned long long pubkey) {
+    return exists_key_int(matrix_kpub, lines, pubkey) ? key_digits_2_long_int(matrix_kpriv[lines]) : 0;
+}
+
+unsigned long long get_runlength_int(short **matrix_kpriv, short **matrix_kcod, int lines, unsigned long long privkey) {
+    return exists_key_int(matrix_kpriv, lines, privkey) ? key_digits_2_long_int(matrix_kcod[lines]) : 0;
 }
 
 unsigned long long delete_key_int(short **matrix_kpub, short **matrix_kpriv, short **matrix_kcod, int lines, short pubkey) {
@@ -318,7 +303,7 @@ short** search_private_keys_int(short **matrix_kpub, short **matrix_kpriv, int l
         unsigned long long privkey, pubkey;
         for (int i = 0; i < n; ++i) {
             pubkey = key_digits_2_long_int(matrix_kpub[found[i]]);
-            privkey = get_private_key_int(matrix_kpub, matrix_kpriv, n, pubkey);
+            privkey = get_private_key_int(matrix_kpub, matrix_kpriv, found[i], pubkey);
             store_key_int(found_priv, n+1, privkey);
         }
         return found_priv;
@@ -328,5 +313,29 @@ short** search_private_keys_int(short **matrix_kpub, short **matrix_kpriv, int l
 }
 
 void sort_matrix_int(short **matrix, int lines, int order){
+
+}
+
+void sort_all_matrices_int(short **matrix_kpub, short **matrix_kpriv, short **matrix_kcod, int lines, int order){
+
+}
+
+void list_keys_int(short **matrix_kpub, short **matrix_kpriv, short **matrix_kcod, int lines, int order){
+
+}
+
+void save_txt_keys_int(short **matrix_kpub, short **matrix_kpriv, short **matrix_kcod, int lines, char filename[]){
+
+}
+
+void load_txt_keys_int(short **matrix_kpub, short **matrix_kpriv, short **matrix_kcod, int lines, char filename[]){
+
+}
+
+void save_bin_keys_int(short **matrix_kpub, short **matrix_kpriv, short **matrix_kcod, int lines, char filename[]){
+
+}
+
+void load_bin_keys_int(short **matrix_kpub, short **matrix_kpriv, short **matrix_kcod, int lines, char filename[]){
 
 }

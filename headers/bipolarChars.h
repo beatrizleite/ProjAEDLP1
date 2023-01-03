@@ -5,6 +5,8 @@
 #ifndef NUMEROSBIPOLARES_BIPOLARCHARS_H
 #define NUMEROSBIPOLARES_BIPOLARCHARS_H
 
+
+int count_chars(unsigned long long key);
 /**
  * Create an array of digits in ascii i.e. chars for a given key.
 * @param key - long key

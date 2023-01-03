@@ -12,14 +12,19 @@
 int main(int argc, const char *argv[]) {
     printf("Projeto LP1/AED1\n");
 
-    /*
-    //printf("!-Metodo menos eficiente-!\nPriv key da public key %d: %llu\n",212,calc_private_key_int(212));
-    printf("!-Metodo mais eficiente-!\n%llu\n",v1_calc_private_key_int(212));
+
+    /********************************************************
+     * ******************************************************
+     * *********************** INTS *************************
+     * ******************************************************
+     * ******************************************************
+     */
+
     short ** matrix = alloc_matrix_int(5, 7);
     store_key_int(matrix, 5, 212);
     printf("%d\n",exists_key_int(matrix, 5, 212));
     printf("%d\n",exists_key_int(matrix, 5, 21));
-    */
+
 
 /*
     CHAVE key;
@@ -38,7 +43,7 @@ int main(int argc, const char *argv[]) {
     printf("Key %llu:\nPriv: %llu\t Run-Length: %llu\n\n", key_digits_2_long_int(matrix_pub[0]), key_digits_2_long_int(matrix_priv[0]), key_digits_2_long_int(matrix_kcod[0]));
 */
 
-
+/*
     short ** rdm_matrix_pub = alloc_matrix_int(LINES,COLUMNS);
     short ** rdm_matrix_priv = alloc_matrix_int(LINES,COLUMNS);
     short ** rdm_matrix_cod = alloc_matrix_int(LINES,COLUMNS);
@@ -61,8 +66,21 @@ int main(int argc, const char *argv[]) {
             printf("priv key #%d found: %llu\n", i, key_digits_2_long_int(search[i]));
         }
     } else {
-        printf("no keys found");
+        printf("no keys found.\n");
     }
+*/
+
+    /********************************************************
+     * ******************************************************
+     * *********************** CHARS ************************
+     * ******************************************************
+     * ******************************************************
+     */
+    char ** matrix = alloc_matrix_char(5, 7);
+    store_key_int(matrix, 5, 212);
+    printf("%d\n",exists_key_int(matrix, 5, 212));
+    printf("%d\n",exists_key_int(matrix, 5, 21));
+
 
     return 0;
 }
