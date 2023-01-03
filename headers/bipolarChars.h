@@ -6,13 +6,19 @@
 #define NUMEROSBIPOLARES_BIPOLARCHARS_H
 
 
-int count_chars(unsigned long long key);
 /**
  * Create an array of digits in ascii i.e. chars for a given key.
 * @param key - long key
  * @return address of array of digits in ascii for a given key
  */
 char* key_long_2_digits_char(unsigned long long key);
+
+/**
+ * Checks if number is bipolar
+ * @param key - long key
+ * @return 0 if number isn't bipolar and 1 if it is
+ */
+int isBipolar(unsigned long long key);
 
 /**
  * Receives an array of digits in ascii i.e. chars and returns the long key.

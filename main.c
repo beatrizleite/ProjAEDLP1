@@ -20,11 +20,11 @@ int main(int argc, const char *argv[]) {
      * ******************************************************
      */
 
-    short ** matrix = alloc_matrix_int(5, 7);
+    /*short ** matrix = alloc_matrix_int(5, 7);
     store_key_int(matrix, 5, 212);
     printf("%d\n",exists_key_int(matrix, 5, 212));
     printf("%d\n",exists_key_int(matrix, 5, 21));
-
+    */
 
 /*
     CHAVE key;
@@ -76,10 +76,10 @@ int main(int argc, const char *argv[]) {
      * ******************************************************
      * ******************************************************
      */
-    char ** matrix = alloc_matrix_char(5, 7);
-    store_key_int(matrix, 5, 212);
-    printf("%d\n",exists_key_int(matrix, 5, 212));
-    printf("%d\n",exists_key_int(matrix, 5, 21));
+
+    unsigned long long priv_key = calc_private_key_char(123);
+    printf("%llu\n", priv_key);
+    printf("%llu\n", calc_runlength_char(priv_key));
 
 
     return 0;
