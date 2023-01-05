@@ -8,6 +8,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+
+typedef struct num {
+    unsigned long long pub;
+    unsigned long long priv;
+    unsigned long long cod;
+} num_t;
+
 /**
  * Generate a random integer to be used as the public key.
  * @return random number representing a public key

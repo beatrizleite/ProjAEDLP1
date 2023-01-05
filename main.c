@@ -43,14 +43,13 @@ int main(int argc, const char *argv[]) {
     printf("Key %llu:\nPriv: %llu\t Run-Length: %llu\n\n", key_digits_2_long_int(matrix_pub[0]), key_digits_2_long_int(matrix_priv[0]), key_digits_2_long_int(matrix_kcod[0]));
 */
 
-/*
     short ** rdm_matrix_pub = alloc_matrix_int(LINES,COLUMNS);
     short ** rdm_matrix_priv = alloc_matrix_int(LINES,COLUMNS);
     short ** rdm_matrix_cod = alloc_matrix_int(LINES,COLUMNS);
 
-    bulk_populate_public_keys_int(rdm_matrix_pub, 10); //working
-    bulk_compute_private_keys_int(rdm_matrix_pub, rdm_matrix_priv, 10); //working
-    bulk_compute_runlengths_int(rdm_matrix_priv, rdm_matrix_cod, 10); //working
+    bulk_populate_public_keys_int(rdm_matrix_pub, LINES); //working
+    bulk_compute_private_keys_int(rdm_matrix_pub, rdm_matrix_priv, LINES); //working
+    bulk_compute_runlengths_int(rdm_matrix_priv, rdm_matrix_cod, LINES); //working
 
     printf("\n==BULK GENERATED==\n");
     for (int i = 0; i < 10; ++i) {
@@ -59,7 +58,7 @@ int main(int argc, const char *argv[]) {
         printf("code key %d: %llu\n\n", i+1, key_digits_2_long_int(rdm_matrix_cod[i]));
     }
 
-    short ** search = search_private_keys_int(rdm_matrix_pub, rdm_matrix_priv, LINES, 24);
+    /*short ** search = search_private_keys_int(rdm_matrix_pub, rdm_matrix_priv, LINES, 24);
     printf("\n==SEARCH RESULTS==\n");
     if (search != 0) {
         for (int i = 1; i <= search[0][0]; ++i) {
@@ -67,8 +66,31 @@ int main(int argc, const char *argv[]) {
         }
     } else {
         printf("no keys found.\n");
+    }*/
+
+    short ** matrix_pub = alloc_matrix_int(LINES,COLUMNS);
+    short ** matrix_priv = alloc_matrix_int(LINES,COLUMNS);
+    short ** matrix_cod = alloc_matrix_int(LINES,COLUMNS);
+    short ** bin_matrix_pub = alloc_matrix_int(LINES,COLUMNS);
+    short ** bin_matrix_priv = alloc_matrix_int(LINES,COLUMNS);
+    short ** bin_matrix_cod = alloc_matrix_int(LINES,COLUMNS);
+    save_txt_keys_int(rdm_matrix_pub, rdm_matrix_priv, rdm_matrix_cod, 10, "C:\\Users\\Bea\\Documents\\ProjAEDLP1\\data\\file_ints_txt.txt");
+    save_bin_keys_int(rdm_matrix_pub, rdm_matrix_priv, rdm_matrix_cod, 10, "C:\\Users\\Bea\\Documents\\ProjAEDLP1\\data\\file_ints_bin.bin");
+    load_txt_keys_int(matrix_pub,matrix_priv,matrix_cod,10, "C:\\Users\\Bea\\Documents\\ProjAEDLP1\\data\\file_ints_txt.txt");
+    printf("\n\n==============================================================\n");
+    for (int i = 0; i < 10; ++i) {
+        printf("public key %d: %llu\n", i+1, key_digits_2_long_int(matrix_pub[i]));
+        printf("private key %d: %llu\n", i+1, key_digits_2_long_int(matrix_priv[i]));
+        printf("code key %d: %llu\n\n", i+1, key_digits_2_long_int(matrix_cod[i]));
     }
-*/
+    printf("\n\n==============================================================\n");
+    load_bin_keys_int(bin_matrix_pub,bin_matrix_priv,bin_matrix_cod,10,  "C:\\Users\\Bea\\Documents\\ProjAEDLP1\\data\\file_ints_bin.bin");
+    for (int i = 0; i < 10; ++i) {
+        printf("public key %d: %llu\n", i+1, key_digits_2_long_int(bin_matrix_pub[i]));
+        printf("private key %d: %llu\n", i+1, key_digits_2_long_int(bin_matrix_priv[i]));
+        printf("code key %d: %llu\n\n", i+1, key_digits_2_long_int(bin_matrix_cod[i]));
+    }
+    list_keys_int(rdm_matrix_pub, rdm_matrix_priv, rdm_matrix_cod, LINES, 0);
 
     /********************************************************
      * ******************************************************
@@ -78,9 +100,8 @@ int main(int argc, const char *argv[]) {
      */
 
     unsigned long long priv_key = calc_private_key_char(123);
-    printf("%llu\n", priv_key);
+    printf("\n\n%llu\n", priv_key);
     printf("%llu\n", calc_runlength_char(priv_key));
-
 
     return 0;
 }

@@ -4,6 +4,7 @@
 
 #include "../headers/bipolarInts.h"
 #include <stdio.h>
+#include <string.h>
 
 int hasZero(unsigned long long key) {
     int result = 0;
@@ -313,29 +314,152 @@ short** search_private_keys_int(short **matrix_kpub, short **matrix_kpriv, int l
 }
 
 void sort_matrix_int(short **matrix, int lines, int order){
-
+    unsigned long long tmp, num1, num2;
+    if(order == 1){ //ascending
+        for (int i = 0; i < lines; ++i) {
+            tmp = key_digits_2_long_int(matrix[i]);
+            num1 = tmp;
+            for (int j = 0; j < lines; ++j) {
+                num2 = key_digits_2_long_int(matrix[j]);
+                if(tmp > num2){
+                    tmp = num2;
+                    num2 = num1;
+                    num1 = tmp;
+                }
+            }
+        }
+    } else { //descending
+        for (int i = 0; i < lines; ++i) {
+            tmp = key_digits_2_long_int(matrix[i]);
+            num1 = tmp;
+            for (int j = 0; j < lines; ++j) {
+                num2 = key_digits_2_long_int(matrix[j]);
+                if(tmp < num2){
+                    tmp = num2;
+                    num2 = num1;
+                    num1 = tmp;
+                }
+            }
+        }
+    }
 }
 
 void sort_all_matrices_int(short **matrix_kpub, short **matrix_kpriv, short **matrix_kcod, int lines, int order){
-
+    sort_matrix_int(matrix_kpub, lines, order);
+    sort_matrix_int(matrix_kpriv, lines, order);
+    sort_matrix_int(matrix_kcod, lines, order);
 }
 
 void list_keys_int(short **matrix_kpub, short **matrix_kpriv, short **matrix_kcod, int lines, int order){
+    sort_all_matrices_int(matrix_kpub, matrix_kpriv, matrix_kcod, lines, order);
+    for (int i = 0; i < lines; ++i) {
+        printf("\nkey #%d\n",i+1);
+        printf("%llu\n", key_digits_2_long_int(matrix_kpub[i]));
+        printf("%llu\n", key_digits_2_long_int(matrix_kpriv[i]));
+        printf("%llu\n", key_digits_2_long_int(matrix_kcod[i]));
+    }
 
 }
 
 void save_txt_keys_int(short **matrix_kpub, short **matrix_kpriv, short **matrix_kcod, int lines, char filename[]){
+    FILE *fp;
+    unsigned long long pub, priv, cod;
+    fp = fopen(filename, "w");
 
+    if(fp == NULL){
+        printf("Can't create file.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; i < lines; ++i) {
+        pub = key_digits_2_long_int(matrix_kpub[i]);
+        fprintf(fp,"%llu",pub);
+        fprintf(fp,",");
+        priv = key_digits_2_long_int(matrix_kpriv[i]);
+        fprintf(fp,"%llu",priv);
+        fprintf(fp,",");
+        cod = key_digits_2_long_int(matrix_kcod[i]);
+        fprintf(fp,"%llu",cod);
+        fprintf(fp, "\n");
+    }
+    fclose(fp);
 }
 
 void load_txt_keys_int(short **matrix_kpub, short **matrix_kpriv, short **matrix_kcod, int lines, char filename[]){
+    FILE *fp;
+    char line[255];
+    int aux1=0, aux2=0, aux3=0;
+    unsigned long long pub = 0;
+    unsigned long long priv = 0;
+    unsigned long long cod = 0;
+    fp = fopen(filename, "r");
 
+    if(fp == NULL){
+        printf("Can't open/read file.\n");
+        exit(EXIT_FAILURE);
+    }
+    int k = 0;
+    while(fgets(line, sizeof(line), fp)){
+
+        int i = 0;
+        char *token;
+        token = strtok(line, ",");
+
+        while(token != NULL){
+            if(i == 0){
+                pub = atoll(token);
+                token = strtok(NULL,",");
+                i++;
+            }else if(i == 1){
+                priv = atoll(token);
+                token = strtok(NULL,",");
+                i++;
+
+            }else{
+                cod = atoll(token);
+                token = strtok(NULL,",");
+            }
+        }
+
+        store_key_int(matrix_kpub,k+1,pub);
+        store_key_int(matrix_kpriv,k+1,priv);
+        store_key_int(matrix_kcod,k+1,cod);
+        k++;
+    }
+
+    fclose(fp);
 }
 
-void save_bin_keys_int(short **matrix_kpub, short **matrix_kpriv, short **matrix_kcod, int lines, char filename[]){
-
+void save_bin_keys_int(short **matrix_kpub, short **matrix_kpriv, short **matrix_kcod, int lines, char filename[]) {
+    num_t number[lines];
+    FILE *fp;
+    fp = fopen(filename, "wb");
+    if (fp == NULL) {
+        printf("Can't create file.\n");
+        exit(EXIT_FAILURE);
+    }
+    for (int i = 0; i < lines; ++i) {
+        number[i].pub = key_digits_2_long_int(matrix_kpub[i]);
+        number[i].priv = key_digits_2_long_int(matrix_kpriv[i]);
+        number[i].cod = key_digits_2_long_int(matrix_kcod[i]);
+    }
+    fwrite(number, sizeof(num_t), lines, fp);
+    fclose(fp);
 }
 
 void load_bin_keys_int(short **matrix_kpub, short **matrix_kpriv, short **matrix_kcod, int lines, char filename[]){
-
+    num_t number[lines];
+    FILE *fp;
+    fp = fopen(filename, "rb");
+    if (fp == NULL) {
+        printf("Can't create file.\n");
+        exit(EXIT_FAILURE);
+    }
+    fread(number, sizeof(num_t), lines, fp);
+    for (int i = 0; i < lines; ++i) {
+        store_key_int(matrix_kpub, i+1, number[i].pub);
+        store_key_int(matrix_kpriv, i+1, number[i].priv);
+        store_key_int(matrix_kcod, i+1, number[i].cod);
+    }
+    fclose(fp);
 }
