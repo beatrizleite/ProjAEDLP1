@@ -168,6 +168,12 @@ void bulk_compute_runlengths_int(short **matrix_kpriv, short **matrix_kcod, int 
  */
 short** search_private_keys_int(short **matrix_kpub, short **matrix_kpriv, int lines, unsigned long long partialpubkey);
 
+
+unsigned long long *create_keys_array(short **matrix, int lines);
+void swap(unsigned long long *a, unsigned long long *b);
+int partition(unsigned long long *arr, int low, int high, int order);
+void quicksort(unsigned long long *arr, int low, int high, int order);
+
 /**
  * Sort a matrix keys in ascending or descending order
  * @param matrix - matrix to be sorted

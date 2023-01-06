@@ -7,6 +7,7 @@
 #include <string.h>
 #include <malloc.h>
 #include "../headers/bipolarInts.h"
+#include "../headers/structs.h"
 
 char* key_long_2_digits_char(unsigned long long key){
     int cnt = count_digits(key);
@@ -155,7 +156,7 @@ unsigned long long delete_key_char(char **matrix_kpub, char **matrix_kpriv, char
 void bulk_populate_public_keys_char(char **matrix_kpub, int lines){
     for (int i = 0; i < lines; ++i) {
         unsigned long long num = new_public_key_int();
-        store_key_char(matrix_kpub, lines, num);
+        store_key_char(matrix_kpub, i+1, num);
     }
 }
 
@@ -210,33 +211,21 @@ char** search_private_keys_char(char **matrix_kpub, char **matrix_kpriv, int lin
     }
 }
 
+unsigned long long *create_keys_array_char(char **matrix, int lines){
+    unsigned long long *keys = (unsigned long long *) malloc(lines * sizeof(unsigned long long));
+    for (int i = 0; i < lines; ++i) {
+        keys[i] = key_digits_2_long_char(matrix[i]);
+    }
+    return keys;
+}
+
 void sort_matrix_char(char **matrix, int lines, int order){
-    unsigned long long tmp, num1, num2;
-    if(order == 1){ //ascending
-        for (int i = 0; i < lines; ++i) {
-            tmp = key_digits_2_long_char(matrix[i]);
-            num1 = tmp;
-            for (int j = 0; j < lines; ++j) {
-                num2 = key_digits_2_long_char(matrix[j]);
-                if(tmp > num2){
-                    tmp = num2;
-                    num2 = num1;
-                    num1 = tmp;
-                }
-            }
-        }
-    } else { //descending
-        for (int i = 0; i < lines; ++i) {
-            tmp = key_digits_2_long_char(matrix[i]);
-            num1 = tmp;
-            for (int j = 0; j < lines; ++j) {
-                num2 = key_digits_2_long_char(matrix[j]);
-                if(tmp < num2){
-                    tmp = num2;
-                    num2 = num1;
-                    num1 = tmp;
-                }
-            }
+    unsigned long long *keys = create_keys_array_char(matrix, lines);
+    quicksort(keys, 0, lines-1, order);
+    for (int i = 0; i < lines; ++i) {
+        char *copy = key_long_2_digits_char(keys[i]);
+        for (int j = 0; j < COLUMNS; ++j) {
+            matrix[i][j] = copy[j];
         }
     }
 }
@@ -248,7 +237,7 @@ void sort_all_matrices_char(char **matrix_kpub, char **matrix_kpriv, char **matr
 }
 
 void list_keys_char(char **matrix_kpub, char **matrix_kpriv, char **matrix_kcod, int lines, int order){
-    sort_all_matrices_char(matrix_kpub, matrix_kpriv, matrix_kcod, lines, order);
+    sort_matrix_char(matrix_kpub, lines, order);
     for (int i = 0; i < lines; ++i) {
         printf("\nkey #%d\n",i+1);
         printf("%llu\n", key_digits_2_long_char(matrix_kpub[i]));
@@ -295,32 +284,33 @@ void load_txt_keys_char(char **matrix_kpub, char **matrix_kpriv, char **matrix_k
         exit(EXIT_FAILURE);
     }
     int k = 0;
-    while(fgets(line, sizeof(line), fp)){
+    while(fgets(line, sizeof(line), fp)) {
 
         int i = 0;
         char *token;
         token = strtok(line, ",");
 
-        while(token != NULL){
-            if(i == 0){
+        while (token != NULL) {
+            if (i == 0) {
                 pub = atoll(token);
-                token = strtok(NULL,",");
+                token = strtok(NULL, ",");
                 i++;
-            }else if(i == 1){
+            } else if (i == 1) {
                 priv = atoll(token);
-                token = strtok(NULL,",");
+                token = strtok(NULL, ",");
                 i++;
 
-            }else{
+            } else {
                 cod = atoll(token);
-                token = strtok(NULL,",");
+                token = strtok(NULL, ",");
             }
         }
 
-        store_key_char(matrix_kpub,k+1,pub);
-        store_key_char(matrix_kpriv,k+1,priv);
-        store_key_char(matrix_kcod,k+1,cod);
+        store_key_char(matrix_kpub, k + 1, pub);
+        store_key_char(matrix_kpriv, k + 1, priv);
+        store_key_char(matrix_kcod, k + 1, cod);
         k++;
+    }
 }
 
 void save_bin_keys_char(char **matrix_kpub, char **matrix_kpriv, char **matrix_kcod, int lines, char filename[]){

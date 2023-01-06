@@ -3,6 +3,7 @@
 //
 
 #include "../headers/bipolarInts.h"
+#include "../headers/structs.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -313,33 +314,56 @@ short** search_private_keys_int(short **matrix_kpub, short **matrix_kpriv, int l
     }
 }
 
-void sort_matrix_int(short **matrix, int lines, int order){
-    unsigned long long tmp, num1, num2;
-    if(order == 1){ //ascending
-        for (int i = 0; i < lines; ++i) {
-            tmp = key_digits_2_long_int(matrix[i]);
-            num1 = tmp;
-            for (int j = 0; j < lines; ++j) {
-                num2 = key_digits_2_long_int(matrix[j]);
-                if(tmp > num2){
-                    tmp = num2;
-                    num2 = num1;
-                    num1 = tmp;
-                }
+unsigned long long *create_keys_array(short **matrix, int lines){
+    unsigned long long *keys = (unsigned long long *) malloc(lines * sizeof(unsigned long long));
+    for (int i = 0; i < lines; ++i) {
+        keys[i] = key_digits_2_long_int(matrix[i]);
+    }
+    return keys;
+}
+
+void swap(unsigned long long *a, unsigned long long *b){
+    unsigned long long t = *a;
+    *a = *b;
+    *b = t;
+}
+
+int partition(unsigned long long *arr, int low, int high, int order){
+    unsigned long long pivot = arr[high];
+    int i = low -1;
+    for (int j = low; j <= high; ++j) {
+        if(order == 1){
+            if(arr[j] < pivot){
+                i++;
+                swap(&arr[i], &arr[j]);
+            }
+        } else {
+            if(arr[j] > pivot){
+                i++;
+                swap(&arr[i], &arr[j]);
             }
         }
-    } else { //descending
-        for (int i = 0; i < lines; ++i) {
-            tmp = key_digits_2_long_int(matrix[i]);
-            num1 = tmp;
-            for (int j = 0; j < lines; ++j) {
-                num2 = key_digits_2_long_int(matrix[j]);
-                if(tmp < num2){
-                    tmp = num2;
-                    num2 = num1;
-                    num1 = tmp;
-                }
-            }
+
+    }
+    swap(&arr[i+1], &arr[high]);
+    return i+1;
+}
+
+void quicksort(unsigned long long *arr, int low, int high, int order){
+    if(low < high) {
+        int pi = partition(arr, low, high, order);
+        quicksort(arr, low, pi-1, order);
+        quicksort(arr, pi+1, high, order);
+    }
+}
+
+void sort_matrix_int(short **matrix, int lines, int order){
+    unsigned long long *keys = create_keys_array(matrix, lines);
+    quicksort(keys, 0, lines-1, order);
+    for (int i = 0; i < lines; ++i) {
+        short *copy = key_long_2_digits_int(keys[i]);
+        for (int j = 0; j < COLUMNS; ++j) {
+            matrix[i][j] = copy[j];
         }
     }
 }
@@ -351,7 +375,7 @@ void sort_all_matrices_int(short **matrix_kpub, short **matrix_kpriv, short **ma
 }
 
 void list_keys_int(short **matrix_kpub, short **matrix_kpriv, short **matrix_kcod, int lines, int order){
-    sort_all_matrices_int(matrix_kpub, matrix_kpriv, matrix_kcod, lines, order);
+    sort_matrix_int(matrix_kpub, lines, order);
     for (int i = 0; i < lines; ++i) {
         printf("\nkey #%d\n",i+1);
         printf("%llu\n", key_digits_2_long_int(matrix_kpub[i]));

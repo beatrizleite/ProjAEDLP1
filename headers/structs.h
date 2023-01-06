@@ -5,6 +5,9 @@
 #ifndef NUMEROSBIPOLARES_STRUCTS_H
 #define NUMEROSBIPOLARES_STRUCTS_H
 
+#define LINES 10
+#define COLUMNS 20
+
 typedef struct date{
     int day;
     int month;
@@ -31,11 +34,23 @@ typedef struct key_holders{
     struct key_holders *next;
 }KEY_HOLDERS;
 
+typedef struct key_holders_list{
+    KEY_HOLDERS *phead;
+    KEY_HOLDERS *ptail;
+    int nkey_holder;
+}KEY_HOLDERS_LIST;
+
 typedef struct user{
     char name[100];
     char email[100];
     KEY_HOLDERS *porta_chaves;
     struct user *next;
 }USER;
+
+typedef struct user_list{
+    USER *phead;
+    USER *ptail;
+    int nusers;
+}USER_LIST;
 
 #endif //NUMEROSBIPOLARES_STRUCTS_H
