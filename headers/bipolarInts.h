@@ -168,10 +168,38 @@ void bulk_compute_runlengths_int(short **matrix_kpriv, short **matrix_kcod, int 
  */
 short** search_private_keys_int(short **matrix_kpub, short **matrix_kpriv, int lines, unsigned long long partialpubkey);
 
-
+/**
+ * Creates an array with the keys in their unsigned long long form
+ * @param matrix - original matrix
+ * @param lines - number of lines in matrix
+ * @return array of unsigned long long keys
+ */
 unsigned long long *create_keys_array(short **matrix, int lines);
+
+/**
+ * Swap
+ * @param a - First key
+ * @param b - Second key
+ */
 void swap(unsigned long long *a, unsigned long long *b);
+
+/**
+ * Divide the array for the quicksort algorithm
+ * @param arr - keys matrix
+ * @param low - lowest index
+ * @param high - highest index
+ * @param order - order to sort by
+ * @return index
+ */
 int partition(unsigned long long *arr, int low, int high, int order);
+
+/**
+ * Use quicksort algorithm to sort array
+ * @param arr - keys matrix
+ * @param low - lowest index
+ * @param high - highest index
+ * @param order - order to sort by
+ */
 void quicksort(unsigned long long *arr, int low, int high, int order);
 
 /**

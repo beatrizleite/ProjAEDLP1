@@ -11,9 +11,9 @@
 
 #endif //NUMEROSBIPOLARES_USERS_H
 
+void users();
 USER_LIST *createUserList();
-KEY_HOLDERS_LIST *createKeyHolderList();
-KEY_HOLDERS *createKeyHolder(KEY_HOLDER *key_holder);
+USER * addUser(char name[100], char email[100], USER_LIST *userList);
 void addUserHead(USER * user, USER_LIST *users_list);
 void addUserTail(USER * user, USER_LIST *users_list);
 USER_LIST *deleteUser(char email[100], USER_LIST *users_list);

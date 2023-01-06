@@ -9,11 +9,15 @@
 #include "headers/structs.h"
 #include "headers/bipolarInts.h"
 #include "headers/bipolarChars.h"
+#include "headers/users.h"
+#include "headers/key_holder.h"
 
 
 int main(int argc, const char *argv[]) {
     printf("Projeto LP1/AED1\n");
 
+    users();
+    key_holder();
     /********************************************************
      * ******************************************************
      * *********************** INTS *************************

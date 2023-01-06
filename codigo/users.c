@@ -14,8 +14,11 @@ USER_LIST *user_list;
 void users(){
     user_list = (USER_LIST *) malloc(sizeof(USER_LIST));
     user_list = createUserList();
-
-
+    addUser("Beatriz", "bea@mail.com", user_list);
+    addUser("Afonso", "af@mail.com", user_list);
+    addUser("Gustavo", "gus@mail.com", user_list);
+    searchNameUser("Beatriz", user_list);
+    deleteUser("gus@mail.com", user_list);
 }
 
 USER_LIST *createUserList(){
