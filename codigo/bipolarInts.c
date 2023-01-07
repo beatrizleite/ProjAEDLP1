@@ -129,6 +129,7 @@ unsigned long long calc_runlength_int(unsigned long long privkey){
     return rl;
 }
 
+// 11115 -> 1 1 11 5 | 11 1 1 5
 unsigned long long private_key_from_runlength_int(unsigned long long runlengthkey) {
     short * rl = key_long_2_digits_int(runlengthkey);
     unsigned long long privkey=0;
@@ -158,11 +159,15 @@ void store_key_int(short **matrix, int lines, unsigned long long key){
     short * key_arr = key_long_2_digits_int(key);
     for (int i = 0; i < lines; ++i) {
         if(matrix[i][0] == 0){
+            //free(*(matrix+i));
+            //matrix[i] = key_arr;
             matrix[i] = realloc(matrix[i], (columns + 1) * sizeof(short));
             for (int j = 0; j < columns; ++j) {
                 matrix[i][j] = key_arr[j];
+                //*(*(matrix+i)+i)
             }
             matrix[i][columns] = -1;
+            free(key_arr);
         }
     }
 }
@@ -280,7 +285,7 @@ void bulk_compute_runlengths_int(short **matrix_kpriv, short **matrix_kcod, int 
 }
 
 short** search_private_keys_int(short **matrix_kpub, short **matrix_kpriv, int lines, unsigned long long partialpubkey) {
-    short * found = calloc(1,sizeof(short));
+    short * found = calloc(lines,sizeof(short));
     short * partialpubkey_arr = key_long_2_digits_int(partialpubkey);
     short ** found_priv = NULL;
     int digit_cnt = count_digits(partialpubkey);
@@ -300,9 +305,9 @@ short** search_private_keys_int(short **matrix_kpub, short **matrix_kpriv, int l
         }
     }
     if(n != 0) {
-        found_priv = alloc_matrix_int(n+1, 10);
+        found_priv = alloc_matrix_int(n+1, COLUMNS);
         found_priv[0][0] = n;
-        unsigned long long privkey, pubkey;
+        unsigned long long privkey=0L, pubkey=0L;
         for (int i = 0; i < n; ++i) {
             pubkey = key_digits_2_long_int(matrix_kpub[found[i]]);
             privkey = get_private_key_int(matrix_kpub, matrix_kpriv, found[i], pubkey);

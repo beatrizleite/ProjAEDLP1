@@ -136,6 +136,7 @@ USER *searchNameUser(char *name, USER_LIST *users_list){
     user = users_list->phead;
     while(user != NULL){
         if(strcmp(name, user->name) == 0){
+            printf("found!\n");
             return user;
         }
         user = user->next;

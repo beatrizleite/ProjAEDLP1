@@ -16,8 +16,16 @@
 int main(int argc, const char *argv[]) {
     printf("Projeto LP1/AED1\n");
 
-    users();
-    key_holder();
+    //users();
+    //key_holder();
+    short ** rdm_matrix_pub = alloc_matrix_int(LINES,COLUMNS);
+    short ** rdm_matrix_priv = alloc_matrix_int(LINES,COLUMNS);
+    short ** rdm_matrix_cod = alloc_matrix_int(LINES,COLUMNS);
+    bulk_populate_public_keys_int(rdm_matrix_pub, LINES); //working
+    bulk_compute_private_keys_int(rdm_matrix_pub, rdm_matrix_priv, LINES); //working
+    bulk_compute_runlengths_int(rdm_matrix_priv, rdm_matrix_cod, LINES); //working
+    list_keys_int(rdm_matrix_pub, rdm_matrix_priv, rdm_matrix_cod, LINES, 0);
+    list_keys_int(rdm_matrix_pub, rdm_matrix_priv, rdm_matrix_cod, LINES, 1);
     /********************************************************
      * ******************************************************
      * *********************** INTS *************************
@@ -94,8 +102,7 @@ int main(int argc, const char *argv[]) {
     }
 
 
-    list_keys_int(rdm_matrix_pub, rdm_matrix_priv, rdm_matrix_cod, LINES, 0);
-    list_keys_int(rdm_matrix_pub, rdm_matrix_priv, rdm_matrix_cod, LINES, 1);
+    l
 
 
     /********************************************************
